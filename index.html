@@ -718,7 +718,7 @@ let lastTap = 0;
 document.addEventListener('touchend', e => { const now=Date.now(); if(now-lastTap<300) e.preventDefault(); lastTap=now; }, {passive:false});
 
 // ── VERSIÓN DE LA APP ────────────────────────────────────────────────────────
-const APP_VERSION = 'v2.1';   // ← cambiá solo acá
+const APP_VERSION = 'v2.2';   // ← cambiá solo acá
 document.addEventListener('DOMContentLoaded', () => {
   const lv = document.getElementById('loginVersion');
   const hv = document.getElementById('headerVersion');
@@ -1406,9 +1406,12 @@ async function cargarPago() {
       if (!FULL_DATA.extraData[currentStandId]) FULL_DATA.extraData[currentStandId] = {};
       const ex  = FULL_DATA.extraData[currentStandId];
       const k   = `p${pagoNumActual}`;
+      const responsableLocal = (CURRENT_PERFIL === 3)
+        ? (document.getElementById('pagoVendedor').value || CURRENT_USER)
+        : CURRENT_USER;
       ex[`${k}m`]   = monto;
       ex[`${k}f`]   = formatFecha(new Date());
-      ex[`${k}r`]   = CURRENT_USER;
+      ex[`${k}r`]   = responsableLocal;
       ex[`${k}med`] = medio;
       ex.d          = Math.max(0, (Number(ex.d)||0) - monto);
       document.getElementById('modalDebe').textContent = `$${ex.d.toLocaleString('es-AR')}`;
