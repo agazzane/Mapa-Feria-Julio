@@ -718,7 +718,7 @@ let lastTap = 0;
 document.addEventListener('touchend', e => { const now=Date.now(); if(now-lastTap<300) e.preventDefault(); lastTap=now; }, {passive:false});
 
 // ── VERSIÓN DE LA APP ────────────────────────────────────────────────────────
-const APP_VERSION = 'v2.2';   // ← cambiá solo acá
+const APP_VERSION = 'v2.3';   // ← cambiá solo acá
 document.addEventListener('DOMContentLoaded', () => {
   const lv = document.getElementById('loginVersion');
   const hv = document.getElementById('headerVersion');
@@ -737,10 +737,12 @@ let PRECIOS_MOB    = {};   // { 'Mesa': 1500, 'Pupitre Doble': 2000, ... }
 
 async function load() {
   try {
-    const [resMap, resFeriantes, resPrecios] = await Promise.all([
+    const [resMap, resFeriantes, resPrecios, resUsuarios, resMedios] = await Promise.all([
       fetch(API_URL),
       fetch(API_URL + '?tipo=feriantes'),
-      fetch(API_URL + '?tipo=precios')
+      fetch(API_URL + '?tipo=precios'),
+      fetch(API_URL + '?tipo=usuarios'),
+      fetch(API_URL + '?tipo=medios')
     ]);
     FULL_DATA = await resMap.json();
     const ferData = await resFeriantes.json();
@@ -750,6 +752,19 @@ async function load() {
     const precData = await resPrecios.json();
     if (precData.ok && precData.precios) {
       PRECIOS_MOB = precData.precios;
+    }
+    // Usuarios/vendedores: se cargan siempre acá para que el combo Admin
+    // esté disponible independientemente de si hay sesión guardada o no
+    const usrData = await resUsuarios.json();
+    if (usrData.ok && usrData.usuarios) {
+      VENDEDORES_LIST = usrData.usuarios
+        .filter(u => u.perfil === 1)
+        .map(u => u.nombre);
+    }
+    // Medios de pago: se cargan acá para que no haya fetch al abrir el primer modal
+    const medData = await resMedios.json();
+    if (medData.ok && medData.medios) {
+      MEDIOS_PAGO = medData.medios;
     }
     buildGrid('grid-pb', FULL_DATA.pbData);
     buildGrid('grid-pa', FULL_DATA.paData);
@@ -1213,16 +1228,12 @@ async function initLogin() {
     activarSesion(saved, savedPerfil);
     return;
   }
-  // Cargar lista de usuarios para el combo
+  // Cargar lista de usuarios para el combo del login
   try {
     const res  = await fetch(API_URL + '?tipo=usuarios');
     const data = await res.json();
     const sel  = document.getElementById('loginUser');
     if (data.ok && data.usuarios.length) {
-      // Guardar vendedores (perfil 1) para el combo del Admin
-      VENDEDORES_LIST = data.usuarios
-        .filter(u => u.perfil === 1)
-        .map(u => u.nombre);
       // Poblar combo de login solo con los nombres
       sel.innerHTML = '<option value="">— Elegí tu usuario —</option>' +
         data.usuarios.map(u => `<option value="${u.nombre}">${u.nombre}</option>`).join('');
@@ -1232,6 +1243,8 @@ async function initLogin() {
   } catch(err) {
     document.getElementById('loginUser').innerHTML = '<option value="">Error de conexión</option>';
   }
+  // Nota: VENDEDORES_LIST se puebla en load() para que siempre esté disponible,
+  // incluso cuando se restaura la sesión desde sessionStorage.
 }
 
 async function doLogin() {
