@@ -1349,7 +1349,8 @@ async function asignarFeriante() {
     // El responsable de la asignación es el vendedor elegido (Admin) o el usuario logueado
     const responsableAsign = (CURRENT_PERFIL === 3 && vendedor) ? vendedor : CURRENT_USER;
     const mobParams = MOB_ITEMS.map(m => `${m.key}=${mobQty[m.key]||0}`).join('&');
-    const urlAsignar = `${API_URL}?tipo=asignar&stand=${encodeURIComponent(currentStandId)}&feriante=${encodeURIComponent(feriante)}&user=${encodeURIComponent(responsableAsign)}&${mobParams}`;
+    const adminParam = (CURRENT_PERFIL === 3 && vendedor) ? `&admin=${encodeURIComponent(CURRENT_USER)}` : '';
+    const urlAsignar = `${API_URL}?tipo=asignar&stand=${encodeURIComponent(currentStandId)}&feriante=${encodeURIComponent(feriante)}&user=${encodeURIComponent(responsableAsign)}&${mobParams}${adminParam}`;
     const resAsignar = await fetch(urlAsignar);
     const dataAsignar = await resAsignar.json();
     if (!dataAsignar.ok) {
