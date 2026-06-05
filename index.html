@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mapa de Stands – Feria Junio 2026</title>
+<title>Mapa de Stands – Feria Julio 2026</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -322,107 +322,6 @@
   }
   .login-user-pill:hover { background: rgba(255,255,255,.2); }
 
-  .admin-header-btn {
-    display: inline-flex; align-items: center; gap: 5px;
-    background: rgba(59,130,246,.25); border-radius: 100px;
-    padding: 4px 11px; font-size: 11px; color: #93c5fd;
-    cursor: pointer; border: 1px solid rgba(96,165,250,.35);
-    font-family: var(--font); font-weight: 600; transition: background .15s;
-    flex-shrink: 0;
-  }
-  .admin-header-btn:active { background: rgba(59,130,246,.4); }
-
-  /* ── ADMIN DRAWER ── */
-  .admin-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.45);
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-    z-index: 200; align-items: flex-end; justify-content: center;
-  }
-  .admin-overlay.open { display: flex; }
-  .admin-drawer {
-    background: var(--surface); border-radius: 22px 22px 0 0;
-    width: 100%; max-width: 480px;
-    animation: slideUp .28s cubic-bezier(.34,1.26,.64,1);
-    max-height: 75vh; display: flex; flex-direction: column;
-    box-shadow: 0 -4px 32px rgba(0,0,0,.14);
-  }
-  .admin-drawer-handle { width: 36px; height: 4px; background: #d1d1d6; border-radius: 2px; margin: 12px auto 0; flex-shrink: 0; }
-  .admin-drawer-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 12px 16px 10px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-  }
-  .admin-drawer-title { font-size: 15px; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 8px; }
-  .admin-drawer-close {
-    background: var(--bg); border: none; border-radius: 50%;
-    width: 30px; height: 30px; font-size: 18px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; color: var(--text3);
-  }
-  .admin-drawer-body { overflow-y: auto; flex: 1; padding-bottom: 16px; }
-  .admin-user-row {
-    display: flex; align-items: center; gap: 12px;
-    padding: 11px 16px; border-bottom: 1px solid var(--border);
-  }
-  .admin-user-row:last-child { border-bottom: none; }
-  .admin-avatar {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: var(--surface2); color: var(--text2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; font-weight: 700; flex-shrink: 0;
-  }
-  .admin-user-name { font-size: 14px; font-weight: 600; color: var(--text); }
-  .admin-user-meta { font-size: 11px; color: var(--text3); margin-top: 1px; }
-  .admin-key-btn {
-    margin-left: auto; padding: 5px 12px;
-    font-size: 12px; font-weight: 600; font-family: var(--font);
-    border-radius: var(--radius-sm); border: 1.5px solid var(--border);
-    background: var(--surface); color: var(--text2); cursor: pointer;
-    white-space: nowrap; transition: background .12s;
-  }
-  .admin-key-btn:active { background: var(--surface2); }
-
-  /* ── ADMIN PASSWORD MODAL ── */
-  .admin-pass-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-    z-index: 300; align-items: center; justify-content: center; padding: 24px;
-  }
-  .admin-pass-overlay.open { display: flex; }
-  .admin-pass-modal {
-    background: var(--surface); border-radius: 20px;
-    padding: 24px 20px 28px; width: 100%; max-width: 360px;
-    box-shadow: 0 8px 40px rgba(0,0,0,.22);
-    animation: slideUp .22s cubic-bezier(.34,1.26,.64,1);
-  }
-  .admin-pass-title { font-size: 18px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-  .admin-pass-sub   { font-size: 13px; color: var(--text3); margin-bottom: 20px; }
-  .admin-pass-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; display: block; }
-  .admin-pass-field { margin-bottom: 14px; }
-  .admin-pass-input {
-    width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
-    border-radius: var(--radius); font-size: 15px; font-family: var(--font);
-    color: var(--text); outline: none; background: var(--bg); transition: border-color .18s;
-  }
-  .admin-pass-input:focus { border-color: var(--accent); }
-  .admin-pass-btn-row { display: flex; gap: 10px; margin-top: 18px; }
-  .admin-pass-cancel {
-    flex: 1; padding: 11px; border: 1.5px solid var(--border);
-    border-radius: var(--radius); background: var(--surface);
-    color: var(--text2); font-size: 14px; font-weight: 600;
-    font-family: var(--font); cursor: pointer;
-  }
-  .admin-pass-save {
-    flex: 1; padding: 11px; border: none;
-    border-radius: var(--radius); background: var(--accent);
-    color: white; font-size: 14px; font-weight: 600;
-    font-family: var(--font); cursor: pointer; transition: background .15s;
-  }
-  .admin-pass-save:disabled { background: #aeaeb2; cursor: not-allowed; }
-  .admin-pass-msg { font-size: 12px; font-weight: 600; text-align: center; margin-top: 10px; min-height: 16px; }
-  .admin-pass-msg.ok  { color: #15803d; }
-  .admin-pass-msg.err { color: #ff3b30; }
-
   /* ── ASIGNAR FERIANTE ── */
   .assign-section { margin-top: 16px; padding: 14px 16px; background: #f5f3ff; border: 1.5px solid #a78bfa; border-radius: var(--radius); }
   .assign-section .assign-title { font-size: 11px; font-weight: 700; color: #5b21b6; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
@@ -582,8 +481,8 @@
 <!-- ── PANTALLA DE LOGIN ── -->
 <div id="loginScreen">
   <div class="login-card">
-    <div class="login-logo"><img src="https://raw.githubusercontent.com/agazzane/Mapa-Feria-Junio/main/SUCOVI.jpg" style="width:64px;height:64px;border-radius:16px;object-fit:cover;"></div>
-    <div class="login-title">Feria Junio 2026</div>
+    <div class="login-logo"><img src="https://raw.githubusercontent.com/agazzane/Mapa-Feria-Julio/main/SUCOVI.jpg" style="width:64px;height:64px;border-radius:16px;object-fit:cover;"></div>
+    <div class="login-title">Feria Julio 2026</div>
     <div class="login-sub">Mapa de Stands · <span id="loginVersion"></span></div>
 
     <div class="login-field">
@@ -607,12 +506,11 @@
 </div>
 
 <header>
-  <img src="https://raw.githubusercontent.com/agazzane/Mapa-Feria-Junio/main/SUCOVI.jpg" class="header-logo-sq" style="object-fit:cover;">
+  <img src="https://raw.githubusercontent.com/agazzane/Mapa-Feria-Julio/main/SUCOVI.jpg" class="header-logo-sq" style="object-fit:cover;">
   <div class="header-text">
-    <h1>Feria Junio 2026 <span id="headerVersion"></span></h1>
+    <h1>Feria Julio 2026 <span id="headerVersion"></span></h1>
     <p id="subtitle">Sincronizando datos...</p>
   </div>
-  <button class="admin-header-btn" id="adminBtn" onclick="openAdminDrawer()" style="display:none" title="Panel de administración">🔑 Admin</button>
   <button class="login-user-pill" id="userPill" onclick="cerrarSesion()" style="display:none">👤 <span id="userPillName"></span><span id="userPerfilBadge" style="display:none;margin-left:6px;font-size:10px;font-weight:700;background:rgba(0,0,0,.08);border-radius:10px;padding:1px 6px;color:#3a3a3c"></span> · Salir</button>
 </header>
 
@@ -990,41 +888,6 @@
   </div>
 </div>
 
-<!-- ── ADMIN DRAWER ── -->
-<div class="admin-overlay" id="adminOverlay" onclick="closeAdminDrawer(event)">
-  <div class="admin-drawer" onclick="event.stopPropagation()">
-    <div class="admin-drawer-handle"></div>
-    <div class="admin-drawer-header">
-      <div class="admin-drawer-title">🔑 Cambiar contraseña</div>
-      <button class="admin-drawer-close" onclick="closeAdminDrawer()">×</button>
-    </div>
-    <div class="admin-drawer-body" id="adminDrawerBody">
-      <div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Cargando usuarios...</div>
-    </div>
-  </div>
-</div>
-
-<!-- ── ADMIN PASSWORD MODAL ── -->
-<div class="admin-pass-overlay" id="adminPassOverlay">
-  <div class="admin-pass-modal">
-    <div class="admin-pass-title">Nueva contraseña</div>
-    <div class="admin-pass-sub" id="adminPassSub"></div>
-    <div class="admin-pass-field">
-      <label class="admin-pass-label">Nueva contraseña</label>
-      <input type="password" class="admin-pass-input" id="adminPassNew" placeholder="Ingresá la nueva contraseña" oninput="checkAdminPassBtn()">
-    </div>
-    <div class="admin-pass-field">
-      <label class="admin-pass-label">Confirmar contraseña</label>
-      <input type="password" class="admin-pass-input" id="adminPassConfirm" placeholder="Repetí la contraseña" oninput="checkAdminPassBtn()">
-    </div>
-    <div class="admin-pass-msg" id="adminPassMsg"></div>
-    <div class="admin-pass-btn-row">
-      <button class="admin-pass-cancel" onclick="closeAdminPassModal()">Cancelar</button>
-      <button class="admin-pass-save" id="adminPassSaveBtn" onclick="guardarNuevaPass()" disabled>Guardar</button>
-    </div>
-  </div>
-</div>
-
 <script>
 document.addEventListener('touchstart', e => { if(e.touches.length>1) e.preventDefault(); }, {passive:false});
 document.addEventListener('touchmove',  e => { if(e.touches.length>1) e.preventDefault(); }, {passive:false});
@@ -1071,7 +934,6 @@ async function load() {
     // esté disponible independientemente de si hay sesión guardada o no
     const usrData = await resUsuarios.json();
     if (usrData.ok && usrData.usuarios) {
-      window._TODOS_USUARIOS = usrData.usuarios;
       VENDEDORES_LIST = usrData.usuarios
         .filter(u => u.perfil === 1)
         .map(u => u.nombre);
@@ -1606,11 +1468,6 @@ async function initLogin() {
   // incluso cuando se restaura la sesión desde sessionStorage.
 }
 
-async function sha256(text) {
-  const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-
 async function doLogin() {
   const user = document.getElementById('loginUser').value.trim();
   const pass = document.getElementById('loginPass').value.trim();
@@ -1624,8 +1481,7 @@ async function doLogin() {
   btn.disabled = true;
   btn.textContent = 'Verificando...';
   try {
-    const passHash = await sha256(pass);
-    const res  = await fetch(`${API_URL}?tipo=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(passHash)}`);
+    const res  = await fetch(`${API_URL}?tipo=login&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`);
     const data = await res.json();
     if (data.ok) {
       const perfil = data.perfil || 1;
@@ -1650,8 +1506,6 @@ function activarSesion(user, perfil) {
   // Mostrar badge de perfil en la píldora de usuario
   const pillEl = document.getElementById('userPill');
   pillEl.style.display = 'inline-flex';
-  const adminBtn = document.getElementById('adminBtn');
-  if (adminBtn) adminBtn.style.display = (CURRENT_PERFIL === 3) ? 'inline-flex' : 'none';
   const perfilBadge = document.getElementById('userPerfilBadge');
   if (perfilBadge) {
     if (CURRENT_PERFIL === 2) {
@@ -2198,109 +2052,6 @@ async function venderMobAdicional() {
     msgEl.className = 'mob-adicional-msg err';
     btn.disabled = false;
     btn.textContent = 'Registrar venta de mobiliario';
-  }
-}
-
-// ── ADMIN: DRAWER Y CAMBIO DE CONTRASEÑA ─────────────────────────────────────
-let adminTargetUser = null;
-
-const PERFIL_LABELS = { 1: 'Vendedor', 2: 'Visualizador', 3: 'Admin' };
-
-function openAdminDrawer() {
-  const overlay = document.getElementById('adminOverlay');
-  const body    = document.getElementById('adminDrawerBody');
-  overlay.classList.add('open');
-
-  // Construir lista de usuarios desde VENDEDORES_LIST + lista completa si está disponible
-  // Usamos la lista de usuarios ya cargada en load()
-  const todosLosUsuarios = (window._TODOS_USUARIOS || []);
-  if (!todosLosUsuarios.length) {
-    body.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">Sin usuarios disponibles</div>';
-    return;
-  }
-  body.innerHTML = todosLosUsuarios.map(u => {
-    const initials = u.nombre.split(' ').slice(0,2).map(p=>p[0]).join('').toUpperCase();
-    const perfilLabel = PERFIL_LABELS[u.perfil] || 'Usuario';
-    return `<div class="admin-user-row">
-      <div class="admin-avatar">${initials}</div>
-      <div>
-        <div class="admin-user-name">${u.nombre}</div>
-        <div class="admin-user-meta">${perfilLabel} · perfil ${u.perfil}</div>
-      </div>
-      <button class="admin-key-btn" onclick="openAdminPassModal('${u.nombre.replace(/'/g,"\\'")}', '${perfilLabel}')">🔑 Cambiar</button>
-    </div>`;
-  }).join('');
-}
-
-function closeAdminDrawer(event) {
-  if (event && event.target !== document.getElementById('adminOverlay')) return;
-  document.getElementById('adminOverlay').classList.remove('open');
-}
-
-function openAdminPassModal(nombre, perfilLabel) {
-  adminTargetUser = nombre;
-  document.getElementById('adminPassSub').textContent = `${nombre} · ${perfilLabel}`;
-  document.getElementById('adminPassNew').value = '';
-  document.getElementById('adminPassConfirm').value = '';
-  document.getElementById('adminPassMsg').textContent = '';
-  document.getElementById('adminPassMsg').className = 'admin-pass-msg';
-  document.getElementById('adminPassSaveBtn').disabled = true;
-  document.getElementById('adminPassOverlay').classList.add('open');
-}
-
-function closeAdminPassModal() {
-  document.getElementById('adminPassOverlay').classList.remove('open');
-  adminTargetUser = null;
-}
-
-function checkAdminPassBtn() {
-  const p1  = document.getElementById('adminPassNew').value;
-  const p2  = document.getElementById('adminPassConfirm').value;
-  const msg = document.getElementById('adminPassMsg');
-  const btn = document.getElementById('adminPassSaveBtn');
-  msg.textContent = '';
-  msg.className = 'admin-pass-msg';
-  if (p1 && p2 && p1 !== p2) {
-    msg.textContent = 'Las contraseñas no coinciden.';
-    msg.className = 'admin-pass-msg err';
-    btn.disabled = true;
-    return;
-  }
-  btn.disabled = !(p1.length >= 4 && p1 === p2);
-}
-
-async function guardarNuevaPass() {
-  const pass = document.getElementById('adminPassNew').value;
-  const btn  = document.getElementById('adminPassSaveBtn');
-  const msg  = document.getElementById('adminPassMsg');
-
-  if (!adminTargetUser || !pass) return;
-
-  btn.disabled = true;
-  btn.textContent = 'Guardando...';
-  msg.textContent = '';
-  msg.className = 'admin-pass-msg';
-
-  try {
-    const passHash = await sha256(pass);
-    const res  = await fetch(`${API_URL}?tipo=changepass&admin=${encodeURIComponent(CURRENT_USER)}&target=${encodeURIComponent(adminTargetUser)}&pass=${encodeURIComponent(passHash)}`);
-    const data = await res.json();
-    if (data.ok) {
-      msg.textContent = `✅ Contraseña de ${adminTargetUser} actualizada.`;
-      msg.className = 'admin-pass-msg ok';
-      btn.textContent = 'Guardar';
-      setTimeout(() => { closeAdminPassModal(); }, 1500);
-    } else {
-      msg.textContent = data.error || 'Error al cambiar la contraseña.';
-      msg.className = 'admin-pass-msg err';
-      btn.disabled = false;
-      btn.textContent = 'Guardar';
-    }
-  } catch(err) {
-    msg.textContent = 'Error de conexión.';
-    msg.className = 'admin-pass-msg err';
-    btn.disabled = false;
-    btn.textContent = 'Guardar';
   }
 }
 
