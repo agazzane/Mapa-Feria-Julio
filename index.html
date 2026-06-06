@@ -740,8 +740,6 @@
 
     <!-- Panel principal -->
     <div class="main-panel" id="mainPanel">
-    <div class="modal-badge" id="modalBadge" data-e=""></div>
-    <h2 id="modalNum"></h2>
     <div class="modal-nombre" id="modalNombre"></div>
     <div class="modal-rubro"  id="modalRubro"></div>
     <div class="modal-zona"   id="modalZona"></div>
@@ -1183,17 +1181,12 @@ function openModal(id) {
   const estado = data.e || 'Disponible';
   const icons  = { Pagado:'✅', Señado:'⭐', Disponible:'🔓', Excedido:'⚠️' };
 
-  const badge = document.getElementById('modalBadge');
-  badge.setAttribute('data-e', estado);
-  badge.textContent = `${icons[estado]||''} ${estado}`;
-
   // Sticky header
   const stickyNum   = document.getElementById('modalStickyNum');
   const stickyBadge = document.getElementById('modalStickyBadge');
   if (stickyNum)   stickyNum.textContent = `Stand ${id}`;
   if (stickyBadge) { stickyBadge.setAttribute('data-e', estado); stickyBadge.textContent = `${icons[estado]||''} ${estado}`; }
 
-  document.getElementById('modalNum').textContent    = `Stand ${id}`;
   document.getElementById('modalNombre').textContent = extra.n || '';
   document.getElementById('modalRubro').textContent  = data.rb || '(sin rubro)';
   document.getElementById('modalZona').textContent   = extra.contrato === 'SI' ? '✍️ Contrato firmado' : '';
