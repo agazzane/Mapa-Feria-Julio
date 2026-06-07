@@ -963,13 +963,26 @@
 </div>
 
 <script>
-document.addEventListener('touchstart', e => { if(e.touches.length>1) e.preventDefault(); }, {passive:false});
-document.addEventListener('touchmove',  e => { if(e.touches.length>1) e.preventDefault(); }, {passive:false});
+// Bloquear zoom nativo del browser solo fuera del mapa (el mapa tiene su propio pinch-to-zoom)
+document.addEventListener('touchstart', e => {
+  if (e.touches.length > 1) {
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    const enMapa = el && (el.closest('.map-scroll') || el.closest('.map-inner'));
+    if (!enMapa) e.preventDefault();
+  }
+}, {passive:false});
+document.addEventListener('touchmove', e => {
+  if (e.touches.length > 1) {
+    const el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+    const enMapa = el && (el.closest('.map-scroll') || el.closest('.map-inner'));
+    if (!enMapa) e.preventDefault();
+  }
+}, {passive:false});
 let lastTap = 0;
 document.addEventListener('touchend', e => { const now=Date.now(); if(now-lastTap<300) e.preventDefault(); lastTap=now; }, {passive:false});
 
 // ── VERSIÓN DE LA APP ────────────────────────────────────────────────────────
-const APP_VERSION = 'v2.0';   // ← cambiá solo acá
+const APP_VERSION = 'v3.0';   // ← cambiá solo acá
 document.addEventListener('DOMContentLoaded', () => {
   const lv = document.getElementById('loginVersion');
   const hv = document.getElementById('headerVersion');
@@ -1548,6 +1561,69 @@ function aplicarZoom() {
   fixMapSize(); centerMap();
 }
 function cambiarZoom(dir) { zoomIdx=Math.max(0,Math.min(ZOOM_STEPS.length-1,zoomIdx+dir)); aplicarZoom(); }
+
+// ── PINCH-TO-ZOOM (mobile) + CTRL+SCROLL (desktop) ───────────────────────────
+(function() {
+  let pinchStartDist = null;
+  let pinchStartIdx  = null;
+
+  function getPinchDist(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  // Detectar si el toque ocurre dentro del modal (para no interferir)
+  function isInsideModal(touch) {
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    return el && document.getElementById('modalOverlay').contains(el);
+  }
+
+  document.addEventListener('touchstart', e => {
+    if (e.touches.length === 2) {
+      if (isInsideModal(e.touches[0])) return;
+      e.preventDefault();
+      pinchStartDist = getPinchDist(e.touches);
+      pinchStartIdx  = zoomIdx;
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchmove', e => {
+    if (e.touches.length === 2 && pinchStartDist !== null) {
+      if (isInsideModal(e.touches[0])) return;
+      e.preventDefault();
+      const dist  = getPinchDist(e.touches);
+      const ratio = dist / pinchStartDist;
+      // Calcular cuántos steps mover según el ratio
+      const targetScale = ZOOM_STEPS[pinchStartIdx] * ratio;
+      // Encontrar el step más cercano al targetScale
+      let bestIdx = 0;
+      let bestDiff = Infinity;
+      ZOOM_STEPS.forEach((s, i) => {
+        const diff = Math.abs(s - targetScale);
+        if (diff < bestDiff) { bestDiff = diff; bestIdx = i; }
+      });
+      if (bestIdx !== zoomIdx) {
+        zoomIdx = bestIdx;
+        aplicarZoom();
+      }
+    }
+  }, { passive: false });
+
+  document.addEventListener('touchend', e => {
+    if (e.touches.length < 2) {
+      pinchStartDist = null;
+      pinchStartIdx  = null;
+    }
+  });
+
+  // Ctrl+scroll en desktop
+  document.addEventListener('wheel', e => {
+    if (!e.ctrlKey) return;
+    e.preventDefault();
+    cambiarZoom(e.deltaY < 0 ? 1 : -1);
+  }, { passive: false });
+})();
 function fixMapSize() {
   const scale = ZOOM_STEPS[zoomIdx];
   document.querySelectorAll('.map-inner').forEach(inner => {
