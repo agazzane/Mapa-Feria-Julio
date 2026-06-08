@@ -1665,8 +1665,12 @@ function centerMap() {
 // ── BIOMÉTRICO (WebAuthn) ────────────────────────────────────────────────────
 const BIO_STORAGE_KEY = 'feriaBioCredential'; // { user, perfil, credentialId (base64) }
 
+function esCelular() {
+  return navigator.maxTouchPoints > 1 && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
 function bioDisponible() {
-  return !!(window.PublicKeyCredential &&
+  return esCelular() && !!(window.PublicKeyCredential &&
     typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function');
 }
 
@@ -1728,9 +1732,24 @@ async function loginConBiometrico() {
     sessionStorage.setItem('feriaPerfil', String(saved.perfil));
     activarSesion(saved.user, saved.perfil);
   } catch(e) {
-    errEl.textContent = 'No se pudo verificar la identidad. Usá tu contraseña.';
+    // Si cancela o falla, mostrar el formulario normal para entrar con contraseña
+    errEl.textContent = 'Verificación cancelada. Ingresá con tu contraseña.';
     btn.disabled = false;
     btn.innerHTML = '<span style="font-size:20px">🪪</span> Entrar sin contraseña';
+    // Cargar el combo de usuarios si todavía no se cargó
+    const sel = document.getElementById('loginUser');
+    if (sel.options.length <= 1 && sel.options[0]?.value === '') {
+      try {
+        const res  = await fetch(API_URL + '?tipo=usuarios');
+        const data = await res.json();
+        if (data.ok && data.usuarios.length) {
+          sel.innerHTML = '<option value="">— Elegí tu usuario —</option>' +
+            data.usuarios.map(u => `<option value="${u.nombre}">${u.nombre}</option>`).join('');
+        }
+      } catch(err) {
+        sel.innerHTML = '<option value="">Error de conexión</option>';
+      }
+    }
   }
 }
 
@@ -1750,6 +1769,12 @@ async function initLogin() {
   if (saved) {
     const savedPerfil = parseInt(sessionStorage.getItem('feriaPerfil') || '1', 10) || 1;
     activarSesion(saved, savedPerfil);
+    return;
+  }
+  // ¿Hay credencial biométrica guardada? → disparar directo, sin pedir contraseña
+  if (bioDisponible() && localStorage.getItem(BIO_STORAGE_KEY)) {
+    mostrarBtnBio();
+    loginConBiometrico(); // si el usuario cancela, queda el botón + el form abajo
     return;
   }
   // Cargar lista de usuarios para el combo del login
