@@ -327,6 +327,21 @@
   .login-btn:active { background: #0062cc; transform: scale(.98); }
   .login-btn:disabled { background: #aeaeb2; cursor: not-allowed; }
   .login-error { color: #ff3b30; font-size: 12px; font-weight: 500; text-align: center; margin-top: 12px; min-height: 16px; }
+  .login-bio-btn {
+    width: 100%; padding: 13px; background: #f2f2f7; color: var(--text);
+    border: 1.5px solid var(--border); border-radius: var(--radius);
+    font-size: 15px; font-weight: 600; font-family: var(--font);
+    cursor: pointer; margin-top: 10px; transition: background .18s, transform .1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .login-bio-btn:active { background: #e5e5ea; transform: scale(.98); }
+  .login-bio-sep {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 14px; color: var(--text3); font-size: 12px;
+  }
+  .login-bio-sep::before, .login-bio-sep::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
   .login-user-pill {
     display: inline-flex; align-items: center; gap: 5px;
     background: rgba(255,255,255,.12); border-radius: 100px;
@@ -560,6 +575,12 @@
     </div>
 
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Ingresar</button>
+    <div id="bioBtnWrap" style="display:none">
+      <div class="login-bio-sep">o</div>
+      <button class="login-bio-btn" id="bioBtn" onclick="loginConBiometrico()">
+        <span style="font-size:20px">🪪</span> Entrar sin contraseña
+      </button>
+    </div>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -982,7 +1003,7 @@ let lastTap = 0;
 document.addEventListener('touchend', e => { const now=Date.now(); if(now-lastTap<300) e.preventDefault(); lastTap=now; }, {passive:false});
 
 // ── VERSIÓN DE LA APP ────────────────────────────────────────────────────────
-const APP_VERSION = 'v3.0';   // ← cambiá solo acá
+const APP_VERSION = 'v4.0';   // ← cambiá solo acá
 document.addEventListener('DOMContentLoaded', () => {
   const lv = document.getElementById('loginVersion');
   const hv = document.getElementById('headerVersion');
@@ -1641,6 +1662,84 @@ function centerMap() {
     inner.style.marginLeft=cw<container.clientWidth?(container.clientWidth-cw)/2+'px':'0px';
   });
 }
+// ── BIOMÉTRICO (WebAuthn) ────────────────────────────────────────────────────
+const BIO_STORAGE_KEY = 'feriaBioCredential'; // { user, perfil, credentialId (base64) }
+
+function bioDisponible() {
+  return !!(window.PublicKeyCredential &&
+    typeof PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable === 'function');
+}
+
+// Convierte ArrayBuffer → base64url y viceversa
+function ab2b64(buf) {
+  return btoa(String.fromCharCode(...new Uint8Array(buf)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+function b642ab(str) {
+  str = str.replace(/-/g,'+').replace(/_/g,'/');
+  while (str.length % 4) str += '=';
+  const bin = atob(str);
+  const buf = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+  return buf.buffer;
+}
+
+async function registrarBiometrico(user, perfil) {
+  if (!bioDisponible()) return;
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    const userId    = new TextEncoder().encode(user);
+    const cred = await navigator.credentials.create({ publicKey: {
+      challenge,
+      rp: { name: 'Feria Julio 2026' },
+      user: { id: userId, name: user, displayName: user },
+      pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+      authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' },
+      timeout: 60000
+    }});
+    // Guardamos el credentialId para verificar después
+    localStorage.setItem(BIO_STORAGE_KEY, JSON.stringify({
+      user, perfil, credentialId: ab2b64(cred.rawId)
+    }));
+    mostrarBtnBio();
+  } catch(e) {
+    // Si el usuario cancela o el dispositivo no lo soporta, no pasa nada
+  }
+}
+
+async function loginConBiometrico() {
+  const saved = JSON.parse(localStorage.getItem(BIO_STORAGE_KEY) || 'null');
+  if (!saved) return;
+  const errEl = document.getElementById('loginError');
+  const btn   = document.getElementById('bioBtn');
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
+  try {
+    const challenge = crypto.getRandomValues(new Uint8Array(32));
+    await navigator.credentials.get({ publicKey: {
+      challenge,
+      allowCredentials: [{ type: 'public-key', id: b642ab(saved.credentialId) }],
+      userVerification: 'required',
+      timeout: 60000
+    }});
+    // Verificación local exitosa → activar sesión directamente
+    sessionStorage.setItem('feriaUser',   saved.user);
+    sessionStorage.setItem('feriaPerfil', String(saved.perfil));
+    activarSesion(saved.user, saved.perfil);
+  } catch(e) {
+    errEl.textContent = 'No se pudo verificar la identidad. Usá tu contraseña.';
+    btn.disabled = false;
+    btn.innerHTML = '<span style="font-size:20px">🪪</span> Entrar sin contraseña';
+  }
+}
+
+function mostrarBtnBio() {
+  if (!bioDisponible()) return;
+  const saved = localStorage.getItem(BIO_STORAGE_KEY);
+  if (saved) document.getElementById('bioBtnWrap').style.display = 'block';
+}
+
 // ── LOGIN ────────────────────────────────────────────────────────────────────
 let CURRENT_USER   = null;
 let CURRENT_PERFIL = 1;   // 1=VENDEDOR, 2=VISUALIZADOR, 3=ADMIN
@@ -1668,6 +1767,7 @@ async function initLogin() {
   } catch(err) {
     document.getElementById('loginUser').innerHTML = '<option value="">Error de conexión</option>';
   }
+  mostrarBtnBio();
   // Nota: VENDEDORES_LIST se puebla en load() para que siempre esté disponible,
   // incluso cuando se restaura la sesión desde sessionStorage.
 }
@@ -1691,6 +1791,10 @@ async function doLogin() {
       const perfil = data.perfil || 1;
       sessionStorage.setItem('feriaUser',   data.user);
       sessionStorage.setItem('feriaPerfil', String(perfil));
+      // Ofrecer guardar biométrico si el dispositivo lo soporta y aún no está registrado
+      if (bioDisponible() && !localStorage.getItem(BIO_STORAGE_KEY)) {
+        registrarBiometrico(data.user, perfil); // no bloqueante
+      }
       activarSesion(data.user, perfil);
     } else {
       errEl.textContent = data.error || 'Usuario o contraseña incorrectos';
@@ -1730,6 +1834,8 @@ function cerrarSesion() {
   if (!confirm('¿Cerrar sesión?')) return;
   sessionStorage.removeItem('feriaUser');
   sessionStorage.removeItem('feriaPerfil');
+  // Si se cierra sesión manualmente, borramos la credencial biométrica guardada
+  localStorage.removeItem(BIO_STORAGE_KEY);
   location.reload();
 }
 
