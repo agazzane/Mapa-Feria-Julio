@@ -1859,8 +1859,6 @@ function cerrarSesion() {
   if (!confirm('¿Cerrar sesión?')) return;
   sessionStorage.removeItem('feriaUser');
   sessionStorage.removeItem('feriaPerfil');
-  // Si se cierra sesión manualmente, borramos la credencial biométrica guardada
-  localStorage.removeItem(BIO_STORAGE_KEY);
   location.reload();
 }
 
